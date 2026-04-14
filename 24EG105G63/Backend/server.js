@@ -9,18 +9,29 @@ import cookieParser from 'cookie-parser'
 import cors from 'cors'
 
 const app = exp()
-
-
 app.use(
   cors({
-    origin: [
-      'http://localhost:5173',
-      'https://atp-24-eg-105-g63-blogg-git-035ccb-deekshis-projects-7e082507.vercel.app',
-      'https://atp-24-eg-105-g63-blogg-app.vercel.app'  // ← add this
-    ],
-    credentials: true
-   })
- )
+    origin: function (origin, callback) {
+      const allowedOrigins = [
+        "http://localhost:5173",
+      ];
+
+      // Allow any vercel.app subdomain
+      const vercelPattern = /^https:\/\/.*\.vercel\.app$/;
+
+      if (
+        !origin ||
+        allowedOrigins.includes(origin) ||
+        vercelPattern.test(origin)
+      ) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 
 //add cookie parser middleware
 app.use(cookieParser())
